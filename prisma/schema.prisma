@@ -101,7 +101,8 @@ model MangaManhwa {
   ratings          Rating[]
   createdAt        DateTime    @default(now())
   updatedAt        DateTime    @updatedAt
-  Bookmarks        Bookmarks[]
+  viewCount        Int         @default(0)
+  bookmarks        Bookmarks[]
 }
 
 model Author {
