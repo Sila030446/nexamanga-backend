@@ -1,0 +1,363 @@
+{
+  "currentChapter": {
+    "id": 1391,
+    "mangaManhwaId": 30,
+    "chapterNumber": 1,
+    "urlScrape": "https://www.go-manga.com/magic-academys-blinker-%e0%b8%95%e0%b8%ad%e0%b8%99%e0%b8%97%e0%b8%b5%e0%b9%88-1/",
+    "title": "ตอนที่ 1",
+    "slug": "magic-academys-genius-blinker-1",
+    "releaseDate": null,
+    "createdAt": "2024-10-14T17:05:40.011Z",
+    "updatedAt": "2024-10-14T17:05:40.011Z",
+    "pages": [
+      {
+        "id": 29209,
+        "chapterId": 1391,
+        "pageNumber": 1,
+        "imageUrl": "https://nexamanga-files.s3.ap-southeast-1.amazonaws.com/Magic Academy’s Genius Blinker/ตอนที่ 1/60c5bca2-3352-4be3-8425-fba793b2f56b.jpg",
+        "createdAt": "2024-10-14T17:05:47.864Z",
+        "updatedAt": "2024-10-14T17:05:47.864Z"
+      },
+      {
+        "id": 29206,
+        "chapterId": 1391,
+        "pageNumber": 2,
+        "imageUrl": "https://nexamanga-files.s3.ap-southeast-1.amazonaws.com/Magic Academy’s Genius Blinker/ตอนที่ 1/88a5aab1-54ee-4a50-b334-1c97d6bf04bf.jpg",
+        "createdAt": "2024-10-14T17:05:47.812Z",
+        "updatedAt": "2024-10-14T17:05:47.812Z"
+      },
+      {
+        "id": 29212,
+        "chapterId": 1391,
+        "pageNumber": 3,
+        "imageUrl": "https://nexamanga-files.s3.ap-southeast-1.amazonaws.com/Magic Academy’s Genius Blinker/ตอนที่ 1/8c6764ca-4f68-4ead-ab03-1e822e5f8b11.jpg",
+        "createdAt": "2024-10-14T17:05:47.846Z",
+        "updatedAt": "2024-10-14T17:05:47.846Z"
+      },
+      {
+        "id": 29205,
+        "chapterId": 1391,
+        "pageNumber": 4,
+        "imageUrl": "https://nexamanga-files.s3.ap-southeast-1.amazonaws.com/Magic Academy’s Genius Blinker/ตอนที่ 1/84557839-2c25-47d5-a365-d2bf2467906b.jpg",
+        "createdAt": "2024-10-14T17:05:47.741Z",
+        "updatedAt": "2024-10-14T17:05:47.741Z"
+      },
+      {
+        "id": 29197,
+        "chapterId": 1391,
+        "pageNumber": 5,
+        "imageUrl": "https://nexamanga-files.s3.ap-southeast-1.amazonaws.com/Magic Academy’s Genius Blinker/ตอนที่ 1/f2dba49f-da34-4359-81df-fe62b6b96e11.jpg",
+        "createdAt": "2024-10-14T17:05:47.618Z",
+        "updatedAt": "2024-10-14T17:05:47.618Z"
+      },
+      {
+        "id": 29200,
+        "chapterId": 1391,
+        "pageNumber": 6,
+        "imageUrl": "https://nexamanga-files.s3.ap-southeast-1.amazonaws.com/Magic Academy’s Genius Blinker/ตอนที่ 1/620c2494-e45b-41fb-a860-79ff1783bc30.jpg",
+        "createdAt": "2024-10-14T17:05:47.660Z",
+        "updatedAt": "2024-10-14T17:05:47.660Z"
+      },
+      {
+        "id": 29204,
+        "chapterId": 1391,
+        "pageNumber": 7,
+        "imageUrl": "https://nexamanga-files.s3.ap-southeast-1.amazonaws.com/Magic Academy’s Genius Blinker/ตอนที่ 1/d673347e-5537-46af-a2c4-74ab222add3b.jpg",
+        "createdAt": "2024-10-14T17:05:47.744Z",
+        "updatedAt": "2024-10-14T17:05:47.744Z"
+      },
+      {
+        "id": 29208,
+        "chapterId": 1391,
+        "pageNumber": 8,
+        "imageUrl": "https://nexamanga-files.s3.ap-southeast-1.amazonaws.com/Magic Academy’s Genius Blinker/ตอนที่ 1/ab3a8542-a6d5-4286-a80e-a00df6db3436.jpg",
+        "createdAt": "2024-10-14T17:05:47.878Z",
+        "updatedAt": "2024-10-14T17:05:47.878Z"
+      },
+      {
+        "id": 29201,
+        "chapterId": 1391,
+        "pageNumber": 9,
+        "imageUrl": "https://nexamanga-files.s3.ap-southeast-1.amazonaws.com/Magic Academy’s Genius Blinker/ตอนที่ 1/df5ed2cd-d900-47d6-b432-45abb811456a.jpg",
+        "createdAt": "2024-10-14T17:05:47.739Z",
+        "updatedAt": "2024-10-14T17:05:47.739Z"
+      },
+      {
+        "id": 29203,
+        "chapterId": 1391,
+        "pageNumber": 10,
+        "imageUrl": "https://nexamanga-files.s3.ap-southeast-1.amazonaws.com/Magic Academy’s Genius Blinker/ตอนที่ 1/e4bc5f37-20b3-4203-8310-541c96b47da4.jpg",
+        "createdAt": "2024-10-14T17:05:47.739Z",
+        "updatedAt": "2024-10-14T17:05:47.739Z"
+      },
+      {
+        "id": 29198,
+        "chapterId": 1391,
+        "pageNumber": 11,
+        "imageUrl": "https://nexamanga-files.s3.ap-southeast-1.amazonaws.com/Magic Academy’s Genius Blinker/ตอนที่ 1/377764c1-3998-4947-b4d9-b7ad77aa02ad.jpg",
+        "createdAt": "2024-10-14T17:05:47.658Z",
+        "updatedAt": "2024-10-14T17:05:47.658Z"
+      },
+      {
+        "id": 29202,
+        "chapterId": 1391,
+        "pageNumber": 12,
+        "imageUrl": "https://nexamanga-files.s3.ap-southeast-1.amazonaws.com/Magic Academy’s Genius Blinker/ตอนที่ 1/40e5c5bc-ca5c-4c28-8b8c-ea4c02367fda.jpg",
+        "createdAt": "2024-10-14T17:05:47.738Z",
+        "updatedAt": "2024-10-14T17:05:47.738Z"
+      },
+      {
+        "id": 29207,
+        "chapterId": 1391,
+        "pageNumber": 13,
+        "imageUrl": "https://nexamanga-files.s3.ap-southeast-1.amazonaws.com/Magic Academy’s Genius Blinker/ตอนที่ 1/815aef05-c3cd-4ed7-b829-4866378143b0.jpg",
+        "createdAt": "2024-10-14T17:05:47.815Z",
+        "updatedAt": "2024-10-14T17:05:47.815Z"
+      },
+      {
+        "id": 29210,
+        "chapterId": 1391,
+        "pageNumber": 14,
+        "imageUrl": "https://nexamanga-files.s3.ap-southeast-1.amazonaws.com/Magic Academy’s Genius Blinker/ตอนที่ 1/67556e63-2d31-43ac-bf12-89419011f843.jpg",
+        "createdAt": "2024-10-14T17:05:47.881Z",
+        "updatedAt": "2024-10-14T17:05:47.881Z"
+      },
+      {
+        "id": 29199,
+        "chapterId": 1391,
+        "pageNumber": 15,
+        "imageUrl": "https://nexamanga-files.s3.ap-southeast-1.amazonaws.com/Magic Academy’s Genius Blinker/ตอนที่ 1/c1834e8a-fdbe-4d66-a18f-a7b8fc4b75c2.jpg",
+        "createdAt": "2024-10-14T17:05:47.618Z",
+        "updatedAt": "2024-10-14T17:05:47.618Z"
+      },
+      {
+        "id": 29227,
+        "chapterId": 1391,
+        "pageNumber": 16,
+        "imageUrl": "https://nexamanga-files.s3.ap-southeast-1.amazonaws.com/Magic Academy’s Genius Blinker/ตอนที่ 1/3ba56751-b6f4-4d76-9bb1-7973eff37ebb.jpg",
+        "createdAt": "2024-10-14T17:05:48.359Z",
+        "updatedAt": "2024-10-14T17:05:48.359Z"
+      },
+      {
+        "id": 29223,
+        "chapterId": 1391,
+        "pageNumber": 17,
+        "imageUrl": "https://nexamanga-files.s3.ap-southeast-1.amazonaws.com/Magic Academy’s Genius Blinker/ตอนที่ 1/47b317e1-aaf4-4cad-afed-27ec9242e4aa.jpg",
+        "createdAt": "2024-10-14T17:05:48.335Z",
+        "updatedAt": "2024-10-14T17:05:48.335Z"
+      },
+      {
+        "id": 29225,
+        "chapterId": 1391,
+        "pageNumber": 18,
+        "imageUrl": "https://nexamanga-files.s3.ap-southeast-1.amazonaws.com/Magic Academy’s Genius Blinker/ตอนที่ 1/6e5004be-b956-4864-ac01-d0dd25315ed6.jpg",
+        "createdAt": "2024-10-14T17:05:48.336Z",
+        "updatedAt": "2024-10-14T17:05:48.336Z"
+      },
+      {
+        "id": 29229,
+        "chapterId": 1391,
+        "pageNumber": 19,
+        "imageUrl": "https://nexamanga-files.s3.ap-southeast-1.amazonaws.com/Magic Academy’s Genius Blinker/ตอนที่ 1/0f646b7a-fdf0-4834-82ab-cb3b69d23a10.jpg",
+        "createdAt": "2024-10-14T17:05:48.410Z",
+        "updatedAt": "2024-10-14T17:05:48.410Z"
+      },
+      {
+        "id": 29228,
+        "chapterId": 1391,
+        "pageNumber": 20,
+        "imageUrl": "https://nexamanga-files.s3.ap-southeast-1.amazonaws.com/Magic Academy’s Genius Blinker/ตอนที่ 1/7acc373b-6322-4d53-b62a-64e4f619b699.jpg",
+        "createdAt": "2024-10-14T17:05:48.367Z",
+        "updatedAt": "2024-10-14T17:05:48.367Z"
+      },
+      {
+        "id": 29230,
+        "chapterId": 1391,
+        "pageNumber": 21,
+        "imageUrl": "https://nexamanga-files.s3.ap-southeast-1.amazonaws.com/Magic Academy’s Genius Blinker/ตอนที่ 1/85a97e58-c1da-4630-8443-36bbbe97d2fb.jpg",
+        "createdAt": "2024-10-14T17:05:48.412Z",
+        "updatedAt": "2024-10-14T17:05:48.412Z"
+      },
+      {
+        "id": 29226,
+        "chapterId": 1391,
+        "pageNumber": 22,
+        "imageUrl": "https://nexamanga-files.s3.ap-southeast-1.amazonaws.com/Magic Academy’s Genius Blinker/ตอนที่ 1/79729b68-a67b-426d-837e-4e9154823fd0.jpg",
+        "createdAt": "2024-10-14T17:05:48.341Z",
+        "updatedAt": "2024-10-14T17:05:48.341Z"
+      },
+      {
+        "id": 29231,
+        "chapterId": 1391,
+        "pageNumber": 23,
+        "imageUrl": "https://nexamanga-files.s3.ap-southeast-1.amazonaws.com/Magic Academy’s Genius Blinker/ตอนที่ 1/f6f06c61-4682-4bad-85f6-36d664cc04b4.jpg",
+        "createdAt": "2024-10-14T17:05:48.439Z",
+        "updatedAt": "2024-10-14T17:05:48.439Z"
+      },
+      {
+        "id": 29224,
+        "chapterId": 1391,
+        "pageNumber": 24,
+        "imageUrl": "https://nexamanga-files.s3.ap-southeast-1.amazonaws.com/Magic Academy’s Genius Blinker/ตอนที่ 1/a00be8c1-01f7-43e1-bd82-53ef821e7062.jpg",
+        "createdAt": "2024-10-14T17:05:48.336Z",
+        "updatedAt": "2024-10-14T17:05:48.336Z"
+      }
+    ]
+  },
+  "previousSlug": null,
+  "nextSlug": "magic-academys-genius-blinker-2",
+  "allChapters": [
+    {
+      "slug": "magic-academys-genius-blinker-1",
+      "title": "ตอนที่ 1"
+    },
+    {
+      "slug": "magic-academys-genius-blinker-2",
+      "title": "ตอนที่ 2"
+    },
+    {
+      "slug": "magic-academys-genius-blinker-3",
+      "title": "ตอนที่ 3"
+    },
+    {
+      "slug": "magic-academys-genius-blinker-4",
+      "title": "ตอนที่ 4"
+    },
+    {
+      "slug": "magic-academys-genius-blinker-5",
+      "title": "ตอนที่ 5"
+    },
+    {
+      "slug": "magic-academys-genius-blinker-6",
+      "title": "ตอนที่ 6"
+    },
+    {
+      "slug": "magic-academys-genius-blinker-7",
+      "title": "ตอนที่ 7"
+    },
+    {
+      "slug": "magic-academys-genius-blinker-8",
+      "title": "ตอนที่ 8"
+    },
+    {
+      "slug": "magic-academys-genius-blinker-9",
+      "title": "ตอนที่ 9"
+    },
+    {
+      "slug": "magic-academys-genius-blinker-10",
+      "title": "ตอนที่ 10"
+    },
+    {
+      "slug": "magic-academys-genius-blinker-11",
+      "title": "ตอนที่ 11"
+    },
+    {
+      "slug": "magic-academys-genius-blinker-12",
+      "title": "ตอนที่ 12"
+    },
+    {
+      "slug": "magic-academys-genius-blinker-13",
+      "title": "ตอนที่ 13"
+    },
+    {
+      "slug": "magic-academys-genius-blinker-14",
+      "title": "ตอนที่ 14"
+    },
+    {
+      "slug": "magic-academys-genius-blinker-15",
+      "title": "ตอนที่ 15"
+    },
+    {
+      "slug": "magic-academys-genius-blinker-16",
+      "title": "ตอนที่ 16"
+    },
+    {
+      "slug": "magic-academys-genius-blinker-17",
+      "title": "ตอนที่ 17"
+    },
+    {
+      "slug": "magic-academys-genius-blinker-18",
+      "title": "ตอนที่ 18"
+    },
+    {
+      "slug": "magic-academys-genius-blinker-19",
+      "title": "ตอนที่ 19"
+    },
+    {
+      "slug": "magic-academys-genius-blinker-20",
+      "title": "ตอนที่ 20"
+    },
+    {
+      "slug": "magic-academys-genius-blinker-21",
+      "title": "ตอนที่ 21"
+    },
+    {
+      "slug": "magic-academys-genius-blinker-22",
+      "title": "ตอนที่ 22"
+    },
+    {
+      "slug": "magic-academys-genius-blinker-23",
+      "title": "ตอนที่ 23"
+    },
+    {
+      "slug": "magic-academys-genius-blinker-24",
+      "title": "ตอนที่ 24"
+    },
+    {
+      "slug": "magic-academys-genius-blinker-25",
+      "title": "ตอนที่ 25"
+    },
+    {
+      "slug": "magic-academys-genius-blinker-26",
+      "title": "ตอนที่ 26"
+    },
+    {
+      "slug": "magic-academys-genius-blinker-27",
+      "title": "ตอนที่ 27"
+    },
+    {
+      "slug": "magic-academys-genius-blinker-28",
+      "title": "ตอนที่ 28"
+    },
+    {
+      "slug": "magic-academys-genius-blinker-29",
+      "title": "ตอนที่ 29"
+    },
+    {
+      "slug": "magic-academys-genius-blinker-30",
+      "title": "ตอนที่ 30"
+    },
+    {
+      "slug": "magic-academys-genius-blinker-31",
+      "title": "ตอนที่ 31"
+    },
+    {
+      "slug": "magic-academys-genius-blinker-32",
+      "title": "ตอนที่ 32"
+    },
+    {
+      "slug": "magic-academys-genius-blinker-33",
+      "title": "ตอนที่ 33"
+    },
+    {
+      "slug": "magic-academys-genius-blinker-34",
+      "title": "ตอนที่ 34"
+    },
+    {
+      "slug": "magic-academys-genius-blinker-35",
+      "title": "ตอนที่ 35"
+    },
+    {
+      "slug": "magic-academys-genius-blinker-36",
+      "title": "ตอนที่ 36"
+    },
+    {
+      "slug": "magic-academys-genius-blinker-37",
+      "title": "ตอนที่ 37"
+    },
+    {
+      "slug": "magic-academys-genius-blinker-38",
+      "title": "ตอนที่ 38"
+    }
+  ]
+}

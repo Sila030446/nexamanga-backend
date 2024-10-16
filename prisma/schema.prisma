@@ -1,0 +1,197 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Job {
+  id         Int      @id @default(autoincrement())
+  url        String
+  isComplete Boolean  @default(false)
+  status     String   @default("active")
+  jobType    Json
+  createdAt  DateTime @default(now())
+}
+
+<<<<<<< Updated upstream
+model User {
+  id       Int     @id @default(autoincrement())
+  name     String?
+  email    String  @unique
+  password String?
+  image    String?
+
+  emailVerified DateTime?
+  readingLists  ReadingList[]
+  comments      Comment[]
+  ratings       Rating[]
+  Account       Account[]
+=======
+enum Roles {
+  USER
+  ADMIN
+>>>>>>> Stashed changes
+}
+
+model User {
+  id                 String           @id @default(cuid())
+  name               String?
+  email              String           @unique
+  password           String?
+  image              String?
+  role               Roles            @default(USER)
+  googleId           String?
+  hashedRefreshToken String?
+  bookmarks          Bookmarks[]
+  comments           Comment[]
+  ratings            Rating[]
+  readingHistory     ReadingHistory[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+<<<<<<< Updated upstream
+model ReadingList {
+  id           Int           @id @default(autoincrement())
+  user         User          @relation(fields: [userId], references: [id])
+  userId       Int
+  mangaManhwas MangaManhwa[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+=======
+model Bookmarks {
+  id            Int         @id @default(autoincrement())
+  user          User        @relation(fields: [userId], references: [id])
+  userId        String
+  mangaManhwa   MangaManhwa @relation(fields: [mangaManhwaId], references: [id])
+  mangaManhwaId Int
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@unique([userId, mangaManhwaId])
+>>>>>>> Stashed changes
+}
+
+model Comment {
+  id   Int  @id @default(autoincrement())
+  user User @relation(fields: [userId], references: [id])
+
+  userId        String
+  mangaManhwa   MangaManhwa? @relation(fields: [mangaManhwaId], references: [id])
+  mangaManhwaId Int?
+  chapter       Chapter?     @relation(fields: [chapterId], references: [id])
+  chapterId     Int?
+  content       String
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+}
+
+model Rating {
+  id            Int         @id @default(autoincrement())
+  user          User        @relation(fields: [userId], references: [id])
+  userId        String
+  mangaManhwa   MangaManhwa @relation(fields: [mangaManhwaId], references: [id])
+  mangaManhwaId Int
+  score         Int
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+model MangaManhwa {
+  id               Int           @id @default(autoincrement())
+  title            String
+  alternativeTitle String?
+  slug             String        @unique
+  description      String?
+  coverImageUrl    String?
+  releaseDate      DateTime?
+  authors          Author[]
+  genres           Genre[]
+  serialization    String?
+  type             Types[]
+  status           String        @default("ONGOING")
+  chapters         Chapter[]
+  readingLists     ReadingList[]
+  comments         Comment[]
+  ratings          Rating[]
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+}
+
+model Author {
+  id           Int           @id @default(autoincrement())
+  name         String
+  slug         String        @unique
+  mangaManhwas MangaManhwa[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model Genre {
+  id           Int           @id @default(autoincrement())
+  name         String
+  slug         String        @unique
+  mangaManhwas MangaManhwa[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model Types {
+  id           Int           @id @default(autoincrement())
+  name         String
+  slug         String        @unique
+  mangaManhwas MangaManhwa[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model Chapter {
+  id            Int         @id @default(autoincrement())
+  mangaManhwa   MangaManhwa @relation(fields: [mangaManhwaId], references: [id], onDelete: Cascade)
+  mangaManhwaId Int
+  chapterNumber Int
+  urlScrape     String?
+  title         String?
+  slug          String      @unique
+  releaseDate   DateTime?
+  pages         Page[]
+  comments      Comment[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+model Page {
+  id         Int      @id @default(autoincrement())
+  chapter    Chapter  @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  chapterId  Int
+  pageNumber Int
+  imageUrl   String
+  createdAt  DateTime @default(now())
+<<<<<<< Updated upstream
+  updatedAt  DateTime @updatedAt
+=======
+  updatedAt  DateTime @default(now())
+}
+
+model ReadingHistory {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  chapter   Chapter  @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  chapterId Int
+  readAt    DateTime @default(now())
+
+  @@unique([userId, chapterId]) // Ensures a user can't read the same chapter multiple times
+>>>>>>> Stashed changes
+}
