@@ -9,21 +9,35 @@ import { DatabaseService } from 'src/database/database.service';
 import { CreateUserRequest } from './dto/create-user.dto';
 import { Prisma } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
+import * as crypto from 'crypto';
+import { randomStringGenerator } from '@nestjs/common/utils/random-string-generator.util';
+import { MailsService } from 'src/mails/mails.service';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly prisma: DatabaseService) {}
+  constructor(private readonly prisma: DatabaseService, private readonly mails: MailsService) {}
 
   async create(data: CreateUserRequest) {
     try {
       const { email, password, name } = data;
       const hashedPassword = await bcrypt.hash(password, 10);
-
+      const hashedVerificationToken = crypto
+        .createHash('sha256')
+        .update(randomStringGenerator())
+        .digest('hex');
+      await this.mails.confirmEmail({
+        to: email,
+        data: {
+          hash: hashedVerificationToken,
+          user: name,
+        },
+      });
       return await this.prisma.user.create({
         data: {
           email,
           password: hashedPassword,
           name,
+          hashedVerificationToken,
         },
         select: {
           id: true,
@@ -91,6 +105,7 @@ export class UserService {
         password: data.password,
         googleId: data.googleId,
         image: data.image,
+        status: "active"
       },
     });
   }

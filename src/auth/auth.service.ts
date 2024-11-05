@@ -1,5 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '@prisma/client';
@@ -77,21 +81,25 @@ export class AuthService {
 
     // Redirect if necessary
     if (redirect) {
-      response.redirect(`${this.configService.getOrThrow('AUTH_UI_REDIRECT')}/api/auth/google/callback/?accessToken=${accessToken}&refreshToken=${refreshToken}`);
+      response.redirect(
+        `${this.configService.getOrThrow('AUTH_UI_REDIRECT')}/api/auth/google/callback/?accessToken=${accessToken}&refreshToken=${refreshToken}`,
+      );
     }
   }
 
   async verifyUser(email: string, password: string): Promise<User> {
-    try {
-      const user = await this.userService.getUser({ email });
-      const authenticated = await bcrypt.compare(password, user.password);
-      if (!authenticated) {
-        throw new UnauthorizedException('Invalid credentials');
-      }
-      return user;
-    } catch (error) {
-      throw new UnauthorizedException('Invalid credentials');
+    const user = await this.userService.getUser({ email });
+    if (!user) {
+      throw new BadRequestException('User not found');
     }
+    if (user.status !== 'active') {
+      throw new UnauthorizedException('Please verify your account');
+    }
+    const authenticated = await bcrypt.compare(password, user.password);
+    if (!authenticated) {
+      throw new UnauthorizedException('Invalid Password');
+    }
+    return user;
   }
 
   async verifyUserRefreshToken(
@@ -111,6 +119,19 @@ export class AuthService {
     } catch (error) {
       throw new UnauthorizedException('Invalid refresh token');
     }
+  }
+
+  async confirmEmail(hash: string) {
+    const user = await this.userService.getUser({
+      hashedVerificationToken: hash,
+    })
+    if (!user) {
+      throw new UnauthorizedException('Invalid verification token');
+    }
+    await this.userService.updateUser(
+      { id: user.id },
+      { status: 'active', hashedVerificationToken: null },
+    );
   }
 
   async logout(data: User, response: Response): Promise<boolean> {

@@ -1,3 +1,6 @@
+-- CreateEnum
+CREATE TYPE "Roles" AS ENUM ('USER', 'ADMIN');
+
 -- CreateTable
 CREATE TABLE "Job" (
     "id" SERIAL NOT NULL,
@@ -12,48 +15,36 @@ CREATE TABLE "Job" (
 
 -- CreateTable
 CREATE TABLE "User" (
-    "id" SERIAL NOT NULL,
+    "id" TEXT NOT NULL,
     "name" TEXT,
     "email" TEXT NOT NULL,
     "password" TEXT,
     "image" TEXT,
-    "emailVerified" TIMESTAMP(3),
+    "role" "Roles" NOT NULL DEFAULT 'USER',
+    "googleId" TEXT,
+    "hashedRefreshToken" TEXT,
+    "hashedVerificationToken" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "accounts" (
-    "id" TEXT NOT NULL,
-    "user_id" INTEGER NOT NULL,
-    "type" TEXT NOT NULL,
-    "provider" TEXT NOT NULL,
-    "provider_account_id" TEXT NOT NULL,
-    "refresh_token" TEXT,
-    "access_token" TEXT,
-    "expires_at" INTEGER,
-    "token_type" TEXT,
-    "scope" TEXT,
-    "id_token" TEXT,
-    "session_state" TEXT,
-
-    CONSTRAINT "accounts_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "ReadingList" (
+CREATE TABLE "Bookmarks" (
     "id" SERIAL NOT NULL,
-    "userId" INTEGER NOT NULL,
+    "userId" TEXT NOT NULL,
+    "mangaManhwaId" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "ReadingList_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Bookmarks_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "Comment" (
     "id" SERIAL NOT NULL,
-    "userId" INTEGER NOT NULL,
+    "userId" TEXT NOT NULL,
     "mangaManhwaId" INTEGER,
     "chapterId" INTEGER,
     "content" TEXT NOT NULL,
@@ -66,7 +57,7 @@ CREATE TABLE "Comment" (
 -- CreateTable
 CREATE TABLE "Rating" (
     "id" SERIAL NOT NULL,
-    "userId" INTEGER NOT NULL,
+    "userId" TEXT NOT NULL,
     "mangaManhwaId" INTEGER NOT NULL,
     "score" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -88,6 +79,7 @@ CREATE TABLE "MangaManhwa" (
     "status" TEXT NOT NULL DEFAULT 'ONGOING',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "viewCount" INTEGER NOT NULL DEFAULT 0,
 
     CONSTRAINT "MangaManhwa_pkey" PRIMARY KEY ("id")
 );
@@ -147,19 +139,23 @@ CREATE TABLE "Page" (
     "pageNumber" INTEGER NOT NULL,
     "imageUrl" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Page_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "_MangaManhwaToTypes" (
-    "A" INTEGER NOT NULL,
-    "B" INTEGER NOT NULL
+CREATE TABLE "ReadingHistory" (
+    "id" SERIAL NOT NULL,
+    "userId" TEXT NOT NULL,
+    "chapterId" INTEGER NOT NULL,
+    "readAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "ReadingHistory_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "_MangaManhwaToReadingList" (
+CREATE TABLE "_MangaManhwaToTypes" (
     "A" INTEGER NOT NULL,
     "B" INTEGER NOT NULL
 );
@@ -180,7 +176,7 @@ CREATE TABLE "_GenreToMangaManhwa" (
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "accounts_provider_provider_account_id_key" ON "accounts"("provider", "provider_account_id");
+CREATE UNIQUE INDEX "Bookmarks_userId_mangaManhwaId_key" ON "Bookmarks"("userId", "mangaManhwaId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "MangaManhwa_slug_key" ON "MangaManhwa"("slug");
@@ -198,16 +194,13 @@ CREATE UNIQUE INDEX "Types_slug_key" ON "Types"("slug");
 CREATE UNIQUE INDEX "Chapter_slug_key" ON "Chapter"("slug");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "ReadingHistory_userId_chapterId_key" ON "ReadingHistory"("userId", "chapterId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "_MangaManhwaToTypes_AB_unique" ON "_MangaManhwaToTypes"("A", "B");
 
 -- CreateIndex
 CREATE INDEX "_MangaManhwaToTypes_B_index" ON "_MangaManhwaToTypes"("B");
-
--- CreateIndex
-CREATE UNIQUE INDEX "_MangaManhwaToReadingList_AB_unique" ON "_MangaManhwaToReadingList"("A", "B");
-
--- CreateIndex
-CREATE INDEX "_MangaManhwaToReadingList_B_index" ON "_MangaManhwaToReadingList"("B");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "_AuthorToMangaManhwa_AB_unique" ON "_AuthorToMangaManhwa"("A", "B");
@@ -222,10 +215,10 @@ CREATE UNIQUE INDEX "_GenreToMangaManhwa_AB_unique" ON "_GenreToMangaManhwa"("A"
 CREATE INDEX "_GenreToMangaManhwa_B_index" ON "_GenreToMangaManhwa"("B");
 
 -- AddForeignKey
-ALTER TABLE "accounts" ADD CONSTRAINT "accounts_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Bookmarks" ADD CONSTRAINT "Bookmarks_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "ReadingList" ADD CONSTRAINT "ReadingList_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Bookmarks" ADD CONSTRAINT "Bookmarks_mangaManhwaId_fkey" FOREIGN KEY ("mangaManhwaId") REFERENCES "MangaManhwa"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Comment" ADD CONSTRAINT "Comment_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -249,16 +242,16 @@ ALTER TABLE "Chapter" ADD CONSTRAINT "Chapter_mangaManhwaId_fkey" FOREIGN KEY ("
 ALTER TABLE "Page" ADD CONSTRAINT "Page_chapterId_fkey" FOREIGN KEY ("chapterId") REFERENCES "Chapter"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "ReadingHistory" ADD CONSTRAINT "ReadingHistory_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "ReadingHistory" ADD CONSTRAINT "ReadingHistory_chapterId_fkey" FOREIGN KEY ("chapterId") REFERENCES "Chapter"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "_MangaManhwaToTypes" ADD CONSTRAINT "_MangaManhwaToTypes_A_fkey" FOREIGN KEY ("A") REFERENCES "MangaManhwa"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_MangaManhwaToTypes" ADD CONSTRAINT "_MangaManhwaToTypes_B_fkey" FOREIGN KEY ("B") REFERENCES "Types"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "_MangaManhwaToReadingList" ADD CONSTRAINT "_MangaManhwaToReadingList_A_fkey" FOREIGN KEY ("A") REFERENCES "MangaManhwa"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "_MangaManhwaToReadingList" ADD CONSTRAINT "_MangaManhwaToReadingList_B_fkey" FOREIGN KEY ("B") REFERENCES "ReadingList"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_AuthorToMangaManhwa" ADD CONSTRAINT "_AuthorToMangaManhwa_A_fkey" FOREIGN KEY ("A") REFERENCES "Author"("id") ON DELETE CASCADE ON UPDATE CASCADE;

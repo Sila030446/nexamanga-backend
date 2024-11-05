@@ -9,9 +9,8 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model Job {
@@ -37,7 +36,8 @@ model User {
   role                    Roles            @default(USER)
   googleId                String?
   hashedRefreshToken      String?
-  hashedVerificationToken String?
+  status                  String           @default("Inactive")
+  hashedVerificationToken String?          @unique
   bookmarks               Bookmarks[]
   comments                Comment[]
   ratings                 Rating[]
