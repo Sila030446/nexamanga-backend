@@ -77,7 +77,7 @@ export class AuthService {
 
     // Redirect if necessary
     if (redirect) {
-      response.redirect(this.configService.getOrThrow('AUTH_UI_REDIRECT'));
+      response.redirect(`${this.configService.getOrThrow('AUTH_UI_REDIRECT')}/api/auth/google/callback/?accessToken=${accessToken}&refreshToken=${refreshToken}`);
     }
   }
 
