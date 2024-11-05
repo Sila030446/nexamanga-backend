@@ -29,18 +29,19 @@ enum Roles {
 }
 
 model User {
-  id                 String           @id @default(cuid())
-  name               String?
-  email              String           @unique
-  password           String?
-  image              String?
-  role               Roles            @default(USER)
-  googleId           String?
-  hashedRefreshToken String?
-  bookmarks          Bookmarks[]
-  comments           Comment[]
-  ratings            Rating[]
-  readingHistory     ReadingHistory[]
+  id                      String           @id @default(cuid())
+  name                    String?
+  email                   String           @unique
+  password                String?
+  image                   String?
+  role                    Roles            @default(USER)
+  googleId                String?
+  hashedRefreshToken      String?
+  hashedVerificationToken String?
+  bookmarks               Bookmarks[]
+  comments                Comment[]
+  ratings                 Rating[]
+  readingHistory          ReadingHistory[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

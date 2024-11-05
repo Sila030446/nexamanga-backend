@@ -13,6 +13,7 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { BookmarkModule } from './bookmark/bookmark.module';
 import { MangaModule } from './manga/manga.module';
+import { MailerModule } from './mailer/mailer.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { MangaModule } from './manga/manga.module';
     AuthModule,
     UserModule,
     BookmarkModule,
+    MailerModule,
   ],
   controllers: [AppController],
   providers: [AppService, AwsService],
