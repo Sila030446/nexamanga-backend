@@ -12,12 +12,15 @@ import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 import { randomStringGenerator } from '@nestjs/common/utils/random-string-generator.util';
 import { MailsService } from 'src/mails/mails.service';
+import { TelegramService } from 'src/telegram/telegram.service';
+import { formatDateToThaiTime } from 'src/utils/dateTime-convert';
 
 @Injectable()
 export class UserService {
   constructor(
     private readonly prisma: DatabaseService,
     private readonly mails: MailsService,
+    private readonly sendMessage: TelegramService,
   ) {}
 
   async create(data: CreateUserRequest) {
@@ -43,6 +46,10 @@ export class UserService {
           user: name,
         },
       });
+      const formattedDate = formatDateToThaiTime(new Date());
+      await this.sendMessage.sendMessage(
+        `มีผู้ใช้งานใหม่: ${email} \n\n ${formattedDate}`,
+      );
       return await this.prisma.user.create({
         data: {
           email,

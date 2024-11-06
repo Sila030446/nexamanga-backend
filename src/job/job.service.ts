@@ -3,11 +3,14 @@ import { DatabaseService } from '../database/database.service';
 import { Prisma } from '@prisma/client';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
+import { TelegramService } from 'src/telegram/telegram.service';
+import { formatDateToThaiTime } from 'src/utils/dateTime-convert';
 
 @Injectable()
 export class JobService {
   constructor(
     private readonly databaseService: DatabaseService,
+    private readonly sendMessage: TelegramService,
     @InjectQueue('jobsQueue') private readonly jobsQueue: Queue,
   ) {}
 
@@ -29,7 +32,10 @@ export class JobService {
         jobType,
         id: createdJob.id,
       });
-
+      const formattedDate = formatDateToThaiTime(createdJob.createdAt);
+      await this.sendMessage.sendMessage(
+        `มีการสร้าง job ใหม่: ${url} - ${createdJob.id} \n\n ${formattedDate}`,
+      );
       return createdJob;
     } catch (error) {
       throw new HttpException(

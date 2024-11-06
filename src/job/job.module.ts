@@ -5,9 +5,11 @@ import { JobController } from './job.controller';
 import { JobProcessor } from './job.processor';
 import { BlobModule } from 'src/azure/blob.module';
 import { UserModule } from 'src/user/user.module';
+import { TelegramModule } from 'src/telegram/telegram.module';
 
 @Module({
   imports: [
+    TelegramModule,
     UserModule,
     BlobModule,
     BullModule.registerQueue({

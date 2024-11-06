@@ -14,6 +14,7 @@ import { MangaModule } from './manga/manga.module';
 import { MailerModule } from './mailer/mailer.module';
 import { MailsModule } from './mails/mails.module';
 import { BlobModule } from './azure/blob.module';
+import { TelegramModule } from './telegram/telegram.module';
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import { BlobModule } from './azure/blob.module';
     BookmarkModule,
     MailerModule,
     MailsModule,
+    TelegramModule,
   ],
   controllers: [AppController],
   providers: [AppService],
