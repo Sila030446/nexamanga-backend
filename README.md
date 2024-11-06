@@ -9,6 +9,7 @@ A robust NestJS-powered backend service for the Nexamanga platform, featuring Az
 - [Postgresql](https://www.postgresql.org/) with PrismaORM
 - [BullMQ](https://docs.bullmq.io/) - Queue management
 - [Passport](https://www.passportjs.org/) - Authentication
+- [NodeMailler](https://github.com/nodemailer/nodemailer) - Mail Sending
 - [Azure Blob Storage](https://azure.microsoft.com/en-us/products/storage/blobs) - Cloud storage
 - [Puppeteer](https://pptr.dev/) - Web scraping
 - [Swagger](https://swagger.io/) - API documentation
