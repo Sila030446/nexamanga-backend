@@ -5,8 +5,6 @@ import { makimaSearchModule } from './makimaSearch/makimaSearch.module';
 import { JobModule } from './job/job.module';
 import { DatabaseModule } from './database/database.module';
 import { BullModule } from '@nestjs/bullmq';
-import { AwsService } from './aws/aws.service';
-import { AwsModule } from './aws/aws.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
 import { AuthModule } from './auth/auth.module';
@@ -15,6 +13,7 @@ import { BookmarkModule } from './bookmark/bookmark.module';
 import { MangaModule } from './manga/manga.module';
 import { MailerModule } from './mailer/mailer.module';
 import { MailsModule } from './mails/mails.module';
+import { BlobModule } from './azure/blob.module';
 
 @Module({
   imports: [
@@ -22,7 +21,7 @@ import { MailsModule } from './mails/mails.module';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    AwsModule,
+    BlobModule,
     makimaSearchModule,
     JobModule,
     DatabaseModule,
@@ -48,6 +47,6 @@ import { MailsModule } from './mails/mails.module';
     MailsModule,
   ],
   controllers: [AppController],
-  providers: [AppService, AwsService],
+  providers: [AppService],
 })
 export class AppModule {}

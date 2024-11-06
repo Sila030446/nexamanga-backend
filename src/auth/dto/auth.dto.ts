@@ -1,12 +1,10 @@
-import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
+import { IsEmail, IsString, MinLength } from 'class-validator';
 
 export class RegisterDto {
   @IsString()
-  @IsNotEmpty({ message: 'กรุณาระบุชื่อผู้ใช้งาน' })
   name: string;
 
   @IsEmail()
-  @IsNotEmpty({ message: 'กรุณาระบุอีเมล' })
   email: string;
 
   @IsString()

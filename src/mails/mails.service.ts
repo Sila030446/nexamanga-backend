@@ -30,4 +30,34 @@ export class MailsService {
       throw new Error('ไม่สามารถส่งอีเมลยืนยันได้ กรุณาลองใหม่ในภายหลัง');
     }
   }
+
+  async forgotPassword(
+    mailData: MailData<{ hash: string; user: string }>,
+  ): Promise<void> {
+    const frontendUrl = process.env.AUTH_UI_REDIRECT;
+    if (!frontendUrl) {
+      throw new Error('ตัวแปรสภาพแวดล้อม FRONTEND_URL ไม่ได้ถูกกำหนด');
+    }
+
+    try {
+      await this.mailerService.sendMail({
+        to: mailData.to,
+        subject: 'Password Reset',
+        text: `${frontendUrl}/reset-password/${mailData.data.hash}`,
+        templatePath: path.join(
+          'src',
+          'mails',
+          'templates',
+          'reset-password.hbs',
+        ),
+        context: {
+          username: mailData.data.user,
+          resetLink: `${frontendUrl}/reset-password/${mailData.data.hash}`,
+        },
+      });
+    } catch (error) {
+      console.error('ไม่สามารถส่งอีเมลยืนยันถึง:', error);
+      throw new Error('ไม่สามารถส่งอีเมลยืนยันได้ กรุณาลองใหม่ในภายหลัง');
+    }
+  }
 }

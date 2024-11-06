@@ -6,7 +6,7 @@ import {
   startMakimaScraping,
   scrapeChapterImages,
 } from 'src/scraping/makima-scraping';
-import { AwsService } from 'src/aws/aws.service';
+import { AzureService } from 'src/azure/blob.service';
 import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { startGoMangaScraping } from 'src/scraping/gomanga-scraping';
@@ -17,7 +17,7 @@ import { startReaperTransScraping } from 'src/scraping/reapertrans-scraping';
 export class JobProcessor extends WorkerHost {
   constructor(
     private readonly databaseService: DatabaseService,
-    private readonly awsService: AwsService,
+    private readonly azureService: AzureService,
   ) {
     super();
   }
@@ -142,7 +142,7 @@ export class JobProcessor extends WorkerHost {
               imageUrls.map(async (imageUrl, pageNumber) => {
                 try {
                   const uploadedImageUrl =
-                    await this.awsService.uploadImageFromUrl(
+                    await this.azureService.uploadImageFromUrl(
                       imageUrl,
                       manga.title,
                       newChapter.title || `page-${pageNumber + 1}`,
@@ -175,7 +175,7 @@ export class JobProcessor extends WorkerHost {
       // If manga does not exist, save the new manga and all its chapters
       console.log('New manga, saving...');
 
-      const coverImageUrl = await this.awsService.uploadImageFromUrl(
+      const coverImageUrl = await this.azureService.uploadImageFromUrl(
         manga.coverImageUrl,
         manga.title,
         'cover',
@@ -230,11 +230,12 @@ export class JobProcessor extends WorkerHost {
         await Promise.all(
           imageUrls.map(async (imageUrl, pageNumber) => {
             try {
-              const uploadedImageUrl = await this.awsService.uploadImageFromUrl(
-                imageUrl,
-                manga.title,
-                chapter.title || `page-${pageNumber + 1}`,
-              );
+              const uploadedImageUrl =
+                await this.azureService.uploadImageFromUrl(
+                  imageUrl,
+                  manga.title,
+                  chapter.title || `page-${pageNumber + 1}`,
+                );
 
               await this.databaseService.page.create({
                 data: {
@@ -244,9 +245,13 @@ export class JobProcessor extends WorkerHost {
                 },
               });
 
-              console.log(`Image saved to S3 and DB: ${uploadedImageUrl}`);
+              console.log(
+                `Image saved to Blob Storage and DB: ${uploadedImageUrl}`,
+              );
             } catch (error) {
-              console.error(`Failed to upload image to S3: ${error.message}`);
+              console.error(
+                `Failed to upload image to Blob Storage: ${error.message}`,
+              );
             }
           }),
         );

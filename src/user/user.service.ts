@@ -15,11 +15,22 @@ import { MailsService } from 'src/mails/mails.service';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly prisma: DatabaseService, private readonly mails: MailsService) {}
+  constructor(
+    private readonly prisma: DatabaseService,
+    private readonly mails: MailsService,
+  ) {}
 
   async create(data: CreateUserRequest) {
     try {
       const { email, password, name } = data;
+      const user = await this.prisma.user.findUnique({
+        where: {
+          email,
+        },
+      });
+      if (user) {
+        throw new UnprocessableEntityException('User already exists');
+      }
       const hashedPassword = await bcrypt.hash(password, 10);
       const hashedVerificationToken = crypto
         .createHash('sha256')
@@ -46,9 +57,6 @@ export class UserService {
         },
       });
     } catch (error) {
-      if (error.code === 'P2002') {
-        throw new UnprocessableEntityException('Email already exists.');
-      }
       throw error;
     }
   }
@@ -105,8 +113,20 @@ export class UserService {
         password: data.password,
         googleId: data.googleId,
         image: data.image,
-        status: "active"
+        status: 'active',
       },
     });
+  }
+
+  async getUserByResetPasswordToken(token: string) {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        forgotPasswordToken: token,
+      },
+    });
+    if (!user) {
+      throw new BadRequestException('Invalid token');
+    }
+    return user;
   }
 }
