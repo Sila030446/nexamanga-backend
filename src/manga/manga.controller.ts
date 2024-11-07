@@ -23,13 +23,22 @@ export class MangaController {
     return this.mangaService.getAllGenres();
   }
 
+  @Get('genre/:genre')
+  async getAllManhwasByGenre(
+    @Query('page', ParseIntPipe) page: number = 1, // Default value of 1 if not provided
+    @Query('limit', ParseIntPipe) limit: number = 12, // Default value of 12 if not provided
+    @Param('genre') genre: string,
+  ): Promise<{ mangas: MangaManhwa[]; totalPages: number }> {
+    return this.mangaService.getNewMangasUpdateByGenre(genre, { page, limit });
+  }
+
   @Get('update')
   async getAllMangas(
     @Query('page', ParseIntPipe) page: number = 1, // Default value of 1 if not provided
     @Query('limit', ParseIntPipe) limit: number = 12, // Default value of 12 if not provided
   ): Promise<{ mangas: MangaManhwa[]; totalPages: number }> {
     // Call the service method for fetching mangas with pagination
-    return this.mangaService.getNewMangasChapterUpdate(page, limit);
+    return this.mangaService.getNewMangasChapterUpdate({ page, limit });
   }
 
   @Get('update/:type')
@@ -39,7 +48,7 @@ export class MangaController {
     @Param('type') type: string,
   ): Promise<{ mangas: MangaManhwa[]; totalPages: number }> {
     // Call the service method for fetching mangas with pagination
-    return this.mangaService.getNewComicUpdateByType(page, limit, type);
+    return this.mangaService.getNewComicUpdateByType(type, { page, limit });
   }
 
   @Get(':id')
