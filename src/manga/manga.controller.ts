@@ -18,6 +18,16 @@ export class MangaController {
     return this.mangaService.getPopularMangas();
   }
 
+  @Get('all-mangas')
+  async getAllMangasIds() {
+    return this.mangaService.getAllMangasId();
+  }
+
+  @Get('all-chapters-slug')
+  async getAllChapterSlugs() {
+    return this.mangaService.getAllChapterSlugs();
+  }
+
   @Get('genres')
   async getAllGenres() {
     return this.mangaService.getAllGenres();

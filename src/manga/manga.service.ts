@@ -266,7 +266,20 @@ export class MangaService {
    */
   async getAllGenres() {
     return this.databaseService.genre.findMany({
+      orderBy: { id: 'asc' },
       select: { id: true, name: true, slug: true },
+    });
+  }
+
+  async getAllMangasId() {
+    return await this.databaseService.mangaManhwa.findMany({
+      select: { id: true },
+    });
+  }
+
+  async getAllChapterSlugs() {
+    return await this.databaseService.chapter.findMany({
+      select: { slug: true },
     });
   }
 
