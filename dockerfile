@@ -30,6 +30,11 @@ RUN npx prisma generate
 # Build the NestJS application
 RUN npm run build
 
+# Ensure templates directory exists in dist
+RUN mkdir -p dist/src/mails/templates
+# Copy templates to dist directory
+RUN cp -r src/mails/templates dist/src/mails/templates
+
 # Stage 2: Create the production image
 FROM node:18-alpine
 
@@ -47,7 +52,6 @@ ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 ENV CHROME_BIN=/usr/bin/chromium-browser
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
-
 # Set working directory
 WORKDIR /app
 
@@ -55,12 +59,15 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm install --omit=dev
 
-# Copy built application and Prisma client from builder
+# Copy built application, Prisma client, and templates from builder
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder /app/prisma ./prisma
 
-# Expose the port the app runs on (Ensure this matches your docker-compose.yml)
+# Explicitly copy email templates to ensure they're in the correct location
+COPY --from=builder /app/src/mails/templates ./dist/src/mails/templates
+
+# Expose the port the app runs on
 EXPOSE 3000
 
 # Define the command to run the application

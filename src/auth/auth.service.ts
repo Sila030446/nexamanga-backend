@@ -107,7 +107,7 @@ export class AuthService {
     ]);
 
     if (redirect) {
-      const redirectUrl = `${this.configService.getOrThrow('AUTH_UI_REDIRECT')}/api/auth/google/callback/?accessToken=${accessToken}&refreshToken=${refreshToken}`;
+      const redirectUrl = `https://nexamanga.online/api/auth/google/callback/?accessToken=${accessToken}&refreshToken=${refreshToken}`;
       response.redirect(redirectUrl);
     }
   }

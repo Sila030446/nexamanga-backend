@@ -1,35 +1,45 @@
 services:
-  # app:
-  #   build: .
-  #   container_name: nestjs-app
-  #   restart: unless-stopped
-  #   ports:
-  #     - '8888:8888'
-  #   environment:
-  #     NODE_ENV: production
-  #     DATABASE_URL: ${DATABASE_URL}
-  #     DIRECT_URL: ${DIRECT_URL}
-  #     REDIS_HOST: redis
-  #     REDIS_PORT: 6379
-  #     AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-  #     AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-  #     AWS_S3_BUCKET_NAME: ${AWS_S3_BUCKET_NAME}
-  #     AWS_REGION: ${AWS_REGION}
-  #     JWT_ACCESS_TOKEN_SECRET: ${JWT_ACCESS_TOKEN_SECRET}
-  #     JWT_ACCESS_TOKEN_EXPIRATION_MS: ${JWT_ACCESS_TOKEN_EXPIRATION_MS}
-  #     JWT_REFRESH_TOKEN_SECRET: ${JWT_REFRESH_TOKEN_SECRET}
-  #     JWT_REFRESH_TOKEN_EXPIRATION_MS: ${JWT_REFRESH_TOKEN_EXPIRATION_MS}
-  #     GOOGLE_AUTH_CLIENT_ID: ${GOOGLE_AUTH_CLIENT_ID}
-  #     GOOGLE_AUTH_CLIENT_SECRET: ${GOOGLE_AUTH_CLIENT_SECRET}
-  #     GOOGLE_AUTH_REDIRECT_URI: ${GOOGLE_AUTH_REDIRECT_URI}
-  #     AUTH_UI_REDIRECT: ${AUTH_UI_REDIRECT}
-  #   depends_on:
-  #     postgres:
-  #       condition: service_healthy
-  #     redis:
-  #       condition: service_healthy
-  #   networks:
-  #     - app-network
+  app:
+    image: sila030446/nexamanga-backend:latest
+    container_name: nestjs-app
+    restart: unless-stopped
+    ports:
+      - '3000:3000'
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: ${DATABASE_URL}
+      DIRECT_URL: ${DIRECT_URL}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      AZURE_STORAGE_CONNECTION_STRING: ${AZURE_STORAGE_CONNECTION_STRING}
+      AZURE_CONTAINER_NAME: ${AZURE_CONTAINER_NAME}
+      MAILER_HOST: ${MAILER_HOST}
+      MAILER_PORT: ${MAILER_PORT}
+      MAILER_USER: ${MAILER_USER}
+      MAILER_PASSWORD: ${MAILER_PASSWORD}
+      MAILER_IGNORE_TLS: ${MAILER_IGNORE_TLS}
+      MAILER_SECURE: ${MAILER_SECURE}
+      MAILER_REQUIRE_TLS: ${MAILER_REQUIRE_TLS}
+      MAILER_DEFAULT_EMAIL: ${MAILER_DEFAULT_EMAIL}
+      MAILER_DEFAULT_NAME: ${MAILER_DEFAULT_NAME}
+      MAILER_CLIENT_PORT: ${MAILER_CLIENT_PORT}
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+      TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID}
+      JWT_ACCESS_TOKEN_SECRET: ${JWT_ACCESS_TOKEN_SECRET}
+      JWT_ACCESS_TOKEN_EXPIRATION_MS: ${JWT_ACCESS_TOKEN_EXPIRATION_MS}
+      JWT_REFRESH_TOKEN_SECRET: ${JWT_REFRESH_TOKEN_SECRET}
+      JWT_REFRESH_TOKEN_EXPIRATION_MS: ${JWT_REFRESH_TOKEN_EXPIRATION_MS}
+      GOOGLE_AUTH_CLIENT_ID: ${GOOGLE_AUTH_CLIENT_ID}
+      GOOGLE_AUTH_CLIENT_SECRET: ${GOOGLE_AUTH_CLIENT_SECRET}
+      GOOGLE_AUTH_REDIRECT_URI: ${GOOGLE_AUTH_REDIRECT_URI}
+      AUTH_UI_REDIRECT: ${AUTH_UI_REDIRECT}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - app-network
 
   postgres:
     image: postgres:14

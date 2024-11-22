@@ -8,314 +8,273 @@ import {
 } from 'src/scraping/makima-scraping';
 import { AzureService } from 'src/azure/blob.service';
 import { Injectable } from '@nestjs/common';
-import { Cron, CronExpression } from '@nestjs/schedule';
+import { Cron } from '@nestjs/schedule';
 import { startGoMangaScraping } from 'src/scraping/gomanga-scraping';
 import { startReaperTransScraping } from 'src/scraping/reapertrans-scraping';
-import { TelegramService } from 'src/telegram/telegram.service';
 
 @Injectable()
-@Processor('jobsQueue')
+@Processor('jobsQueue', { concurrency: 5 })
 export class JobProcessor extends WorkerHost {
   constructor(
-    private readonly sendMessage: TelegramService,
     private readonly databaseService: DatabaseService,
     private readonly azureService: AzureService,
   ) {
     super();
   }
 
-  @Cron(CronExpression.EVERY_DAY_AT_5PM)
+  // This method runs every 24 hours
+  @Cron('0 2 * * *', {
+    timeZone: 'Asia/Bangkok',
+  })
   async handleScheduledJob() {
     console.log('Checking for updates...');
-    await this.sendMessage.sendMessage('Checking for updates...');
 
+    // Fetch all jobs with status PENDING or COMPLETED
     const jobs = await this.databaseService.job.findMany({
-      where: { status: 'complete' },
+      where: {
+        status: 'complete',
+      },
     });
 
+    // Loop through each job and process it
     for (const job of jobs) {
-      await this.updateJobStatus(job.id, false, 'updated');
+      await this.databaseService.job.update({
+        where: { id: job.id },
+        data: { isComplete: false, status: 'updated' },
+      });
       console.log(`Processing job for URL: ${job.url}`);
-      await this.sendMessage.sendMessage(`Processing job for URL: ${job.url}`);
-
-      await this.processJob(job);
-
-      await this.updateJobStatus(job.id, true, 'complete');
+      await this.process({
+        data: {
+          id: job.id,
+          url: job.url,
+          jobType: job.jobType,
+        },
+      } as Job<any>);
+      await this.databaseService.job.update({
+        where: { id: job.id },
+        data: { isComplete: true, status: 'complete' },
+      });
     }
   }
 
-  private async updateJobStatus(
-    id: number,
-    isComplete: boolean,
-    status: string,
-  ) {
-    await this.databaseService.job.update({
-      where: { id },
-      data: { isComplete, status },
-    });
-  }
-
-  private async processJob(jobData: { id: number; url: string; jobType: any }) {
-    const job: Job<any> = { data: jobData } as Job<any>;
-    await this.process(job);
-  }
-
-  async process(job: Job<any>): Promise<void> {
-    if (!job.data.url || !job.data.jobType)
-      throw new Error('Invalid job data: URL or jobType is missing');
-
-    const browser = await this.launchBrowser();
-    let manga;
+  async process(job: Job<any>): Promise<any> {
+    let browser: Browser | undefined = undefined;
 
     try {
-      manga = await this.scrapeManga(job, browser);
+      browser = await puppeteer.launch({
+        headless: true,
+        args: [
+          '--no-sandbox',
+          '--disable-setuid-sandbox',
+          '--disable-dev-shm-usage',
+          '--disable-gpu',
+        ],
+      });
+      const page = await browser.newPage();
 
-      if (!manga) throw new Error('Failed to scrape manga data');
+      if (!job.data.url || !job.data.jobType) {
+        throw new Error('Invalid job data: URL or jobType is missing');
+      }
 
+      let manga;
+
+      // Use switch case to handle different job types
+      switch (job.data.jobType?.type) {
+        case 'makima':
+          console.log('Navigating to Makimaaaaaaa.com URL:', job.data.url);
+          await page.goto(job.data.url, { timeout: 0 });
+          manga = await startMakimaScraping(page, job.data.url);
+          break;
+
+        case 'go-manga':
+          console.log('Navigating to Go-Manga.com URL:', job.data.url);
+          manga = await startGoMangaScraping(page, job.data.url);
+          break;
+
+        case 'reapertrans':
+          console.log('Navigating to Reapertrans.com URL:', job.data.url);
+          manga = await startReaperTransScraping(page, job.data.url);
+          break;
+
+        // Add other cases for different job types as needed
+        default:
+          throw new Error(`Unknown job type: ${job.data.jobType?.type}`);
+      }
+
+      if (!manga) {
+        throw new Error('Failed to scrape manga data');
+      }
+
+      // Common logic for saving scraped manga data into the database
       const existingManga = await this.databaseService.mangaManhwa.findUnique({
         where: { slug: manga.titleSlug },
         include: { chapters: true },
       });
 
       if (existingManga) {
-        await this.processExistingManga(manga, existingManga, browser);
-      } else {
-        await this.processNewManga(manga, browser);
-      }
+        console.log('Manga already exists');
 
-      await this.updateJobStatus(job.data.id, true, 'complete');
-      await this.sendMessage.sendMessage(
-        `Job completed: ${manga.title} - total ${manga.chapters.length} chapters`,
-      );
-    } catch (error) {
-      console.error('Error occurred:', error.message);
-      await this.handleJobError(job.data.id, error.message);
-    } finally {
-      await this.closeBrowser(browser);
-    }
-  }
-
-  private async launchBrowser(): Promise<Browser> {
-    return puppeteer.launch({
-      headless: true,
-      args: [
-        '--no-sandbox',
-        '--disable-setuid-sandbox',
-        '--disable-dev-shm-usage',
-        '--disable-gpu',
-      ],
-    });
-  }
-
-  private async scrapeManga(job: Job<any>, browser: Browser) {
-    const page = await browser.newPage();
-    let manga;
-
-    switch (job.data.jobType?.type) {
-      case 'makima':
-        console.log('Navigating to Makimaaaaaaa.com URL:', job.data.url);
-        await page.goto(job.data.url, { timeout: 0 });
-        manga = await startMakimaScraping(page, job.data.url);
-        break;
-      case 'go-manga':
-        console.log('Navigating to Go-Manga.com URL:', job.data.url);
-        manga = await startGoMangaScraping(page, job.data.url);
-        break;
-      case 'reapertrans':
-        console.log('Navigating to Reapertrans.com URL:', job.data.url);
-        manga = await startReaperTransScraping(page, job.data.url);
-        break;
-      default:
-        throw new Error(`Unknown job type: ${job.data.jobType?.type}`);
-    }
-
-    return manga;
-  }
-
-  private async processExistingManga(manga, existingManga, browser: Browser) {
-    await this.sendMessage.sendMessage(`Manga ${manga.title} already exists.`);
-    console.log('Manga already exists');
-
-    const newChapters = this.getNewChapters(existingManga, manga);
-    console.log(`Found ${newChapters.length} new chapters`);
-
-    await this.sendMessage.sendMessage(
-      `Found ${newChapters.length} new chapters`,
-    );
-
-    if (newChapters.length > 0) {
-      for (const [index, newChapter] of newChapters.reverse().entries()) {
-        const createdChapter = await this.saveChapter(
-          existingManga.id,
-          newChapter,
-          index,
-          existingManga.chapters.length,
+        const existingChapterSlugs = existingManga.chapters.map(
+          (chapter) => chapter.slug,
         );
-        await this.uploadChapterImages(
-          createdChapter.slug,
-          newChapter.url,
-          manga.title,
-          newChapter.title,
-          browser,
+        const newChapters = manga.chapters.filter(
+          (chapter) =>
+            !existingChapterSlugs.includes(`${manga.titleSlug}${chapter.slug}`),
         );
-      }
-    } else {
-      console.log('No new chapters found.');
-      await this.sendMessage.sendMessage(
-        `No new chapters found for ${manga.title}.`,
-      );
-    }
-  }
 
-  private async processNewManga(manga, browser: Browser) {
-    console.log('New manga, saving...');
+        console.log(`Found ${newChapters.length} new chapters`);
 
-    const coverImageUrl = await this.azureService.uploadImageFromUrl(
-      manga.coverImageUrl,
-      manga.title,
-      'cover',
-    );
-    const reversedChapters = manga.chapters.reverse();
+        if (newChapters.length > 0) {
+          for (const [index, newChapter] of newChapters.reverse().entries()) {
+            const createdChapter = await this.databaseService.chapter.create({
+              data: {
+                chapterNumber: existingManga.chapters.length + index + 1,
+                title: newChapter.title || '',
+                slug: `${manga.titleSlug}${newChapter.slug}`,
+                urlScrape: newChapter.url,
+                mangaManhwa: { connect: { id: existingManga.id } },
+              },
+            });
+            console.log(`New chapter saved: ${createdChapter.slug}`);
 
-    const savedManga = await this.databaseService.mangaManhwa.create({
-      data: {
-        title: manga.title,
-        alternativeTitle: manga.alternativeTitle,
-        slug: manga.titleSlug,
-        description: manga.description,
-        coverImageUrl: coverImageUrl,
-        serialization: manga.serialization,
-        releaseDate: new Date(),
-        authors: {
-          connectOrCreate: manga.authors.map((author) =>
-            this.toCreateConnectData(author),
-          ),
-        },
-        genres: {
-          connectOrCreate: manga.genres.map((genre) =>
-            this.toCreateConnectData(genre),
-          ),
-        },
-        type: {
-          connectOrCreate: manga.type.map((type) =>
-            this.toCreateConnectData(type),
-          ),
-        },
-        chapters: {
-          create: reversedChapters.map((chapter, index) =>
-            this.createChapterData(chapter, manga.titleSlug, index + 1),
-          ),
-        },
-      },
-      include: { chapters: true },
-    });
+            console.log(`Fetching images for chapter: ${createdChapter.slug}`);
+            const imageUrls = await scrapeChapterImages(page, newChapter.url);
 
-    console.log('Manga saved:', savedManga);
-    await this.sendMessage.sendMessage(`New manga saved: ${savedManga.title}`);
+            await Promise.all(
+              imageUrls.map(async (imageUrl, pageNumber) => {
+                try {
+                  const uploadedImageUrl =
+                    await this.azureService.uploadImageFromUrl(
+                      imageUrl,
+                      manga.title,
+                      newChapter.title || `page-${pageNumber + 1}`,
+                    );
 
-    for (const chapter of savedManga.chapters) {
-      await this.uploadChapterImages(
-        chapter.slug,
-        chapter.urlScrape,
-        manga.title,
-        chapter.title,
-        browser,
-      );
-    }
-  }
+                  await this.databaseService.page.create({
+                    data: {
+                      imageUrl: uploadedImageUrl,
+                      pageNumber: pageNumber + 1,
+                      chapter: { connect: { id: createdChapter.id } },
+                    },
+                  });
 
-  private async uploadChapterImages(
-    slug,
-    url,
-    title,
-    chapterTitle,
-    browser: Browser,
-  ) {
-    console.log(`Fetching images for chapter: ${slug}`);
-    const page = await browser.newPage();
-    const imageUrls = await scrapeChapterImages(page, url);
-
-    await Promise.all(
-      imageUrls.map(async (imageUrl, pageNumber) => {
-        try {
-          const uploadedImageUrl = await this.azureService.uploadImageFromUrl(
-            imageUrl,
-            title,
-            chapterTitle || `page-${pageNumber + 1}`,
-          );
-          await this.databaseService.page.create({
-            data: {
-              imageUrl: uploadedImageUrl,
-              pageNumber: pageNumber + 1,
-              chapter: { connect: { slug } },
-            },
-          });
-          console.log(
-            `Image saved to Blob Storage and DB: ${uploadedImageUrl}`,
-          );
-        } catch (error) {
-          console.error(
-            `Failed to upload image to Blob Storage: ${error.message}`,
-          );
+                  console.log(`Image saved to S3 and DB: ${uploadedImageUrl}`);
+                } catch (error) {
+                  console.error(
+                    `Failed to upload image to S3: ${error.message}`,
+                  );
+                }
+              }),
+            );
+          }
+        } else {
+          console.log('No new chapters found.');
         }
-      }),
-    );
-    await page.close();
-  }
 
-  private async handleJobError(id: number, message: string) {
-    await this.sendMessage.sendMessage(`Error processing job: ${message}`);
-    await this.updateJobStatus(id, true, 'failed');
-  }
+        return;
+      }
 
-  private async closeBrowser(browser: Browser) {
-    if (browser) {
-      await browser.close();
-      await this.sendMessage.sendMessage('Browser closed.');
-      console.log('Browser closed.');
+      // If manga does not exist, save the new manga and all its chapters
+      console.log('New manga, saving...');
+
+      const coverImageUrl = await this.azureService.uploadImageFromUrl(
+        manga.coverImageUrl,
+        manga.title,
+        'cover',
+      );
+      const reversedChapters = manga.chapters.reverse();
+
+      const savedManga = await this.databaseService.mangaManhwa.create({
+        data: {
+          title: manga.title,
+          alternativeTitle: manga.alternativeTitle,
+          slug: manga.titleSlug,
+          description: manga.description,
+          coverImageUrl: coverImageUrl,
+          serialization: manga.serialization,
+          releaseDate: new Date(),
+          authors: {
+            connectOrCreate: manga.authors.map((author) => ({
+              where: { slug: author.slug },
+              create: { name: author.name, slug: author.slug },
+            })),
+          },
+          genres: {
+            connectOrCreate: manga.genres.map((genre) => ({
+              where: { slug: genre.slug },
+              create: { name: genre.name, slug: genre.slug },
+            })),
+          },
+          type: {
+            connectOrCreate: manga.type.map((type) => ({
+              where: { slug: type.slug },
+              create: { name: type.name, slug: type.slug },
+            })),
+          },
+          chapters: {
+            create: reversedChapters.map((chapter, index) => ({
+              chapterNumber: index + 1,
+              title: chapter.title || '',
+              slug: `${manga.titleSlug}${chapter.slug}`,
+              urlScrape: chapter.url,
+            })),
+          },
+        },
+        include: { chapters: true },
+      });
+
+      console.log('Manga saved:', savedManga);
+
+      for (const chapter of savedManga.chapters) {
+        console.log(`Fetching images for chapter: ${chapter.slug}`);
+        const imageUrls = await scrapeChapterImages(page, chapter.urlScrape);
+
+        await Promise.all(
+          imageUrls.map(async (imageUrl, pageNumber) => {
+            try {
+              const uploadedImageUrl =
+                await this.azureService.uploadImageFromUrl(
+                  imageUrl,
+                  manga.title,
+                  chapter.title || `page-${pageNumber + 1}`,
+                );
+
+              await this.databaseService.page.create({
+                data: {
+                  imageUrl: uploadedImageUrl,
+                  pageNumber: pageNumber + 1,
+                  chapter: { connect: { id: chapter.id } },
+                },
+              });
+
+              console.log(
+                `Image saved to Blob Storage and DB: ${uploadedImageUrl}`,
+              );
+            } catch (error) {
+              console.error(
+                `Failed to upload image to Blob Storage: ${error.message}`,
+              );
+            }
+          }),
+        );
+      }
+
+      await this.databaseService.job.update({
+        where: { id: job.data.id },
+        data: { isComplete: true, status: 'complete' },
+      });
+    } catch (error) {
+      console.log('Error occurred:', error.message);
+
+      await this.databaseService.job.update({
+        where: { id: job.data.id },
+        data: { isComplete: true, status: 'failed' },
+      });
+    } finally {
+      if (browser) {
+        await browser.close();
+        console.log('Browser closed.');
+      }
     }
-  }
-
-  private toCreateConnectData(entity) {
-    return {
-      where: { slug: entity.slug },
-      create: { name: entity.name, slug: entity.slug },
-    };
-  }
-
-  private createChapterData(chapter, titleSlug, chapterNumber: number) {
-    return {
-      chapterNumber,
-      title: chapter.title || '',
-      slug: `${titleSlug}${chapter.slug}`,
-      urlScrape: chapter.url,
-    };
-  }
-
-  private getNewChapters(existingManga, manga) {
-    const existingChapterSlugs = new Set(
-      existingManga.chapters.map((chapter) => chapter.slug),
-    );
-    return manga.chapters.filter(
-      (chapter) =>
-        !existingChapterSlugs.has(`${manga.titleSlug}${chapter.slug}`),
-    );
-  }
-
-  private async saveChapter(
-    mangaId: number,
-    chapter,
-    index: number,
-    existingChapterCount: number,
-  ) {
-    return this.databaseService.chapter.create({
-      data: {
-        chapterNumber: existingChapterCount + index + 1,
-        title: chapter.title || '',
-        slug: `${mangaId}${chapter.slug}`,
-        urlScrape: chapter.url,
-        mangaManhwa: { connect: { id: mangaId } },
-      },
-    });
   }
 }
