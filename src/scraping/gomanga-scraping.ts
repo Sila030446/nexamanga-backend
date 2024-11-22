@@ -24,12 +24,13 @@ export const startGoMangaScraping = async (
     await page.goto(url, { waitUntil: 'networkidle2', timeout: 0 });
 
     const manga = await page.evaluate(() => {
-      const generateSlug = (text: string): string => {
-        return text
-          .toLowerCase()
-          .replace(/\s+/g, '-') // Replace spaces with hyphens
-          .replace(/[^\w-]+/g, ''); // Remove special characters
-      };
+      const generateSlug = (text: string) =>
+        encodeURIComponent(
+          text
+            .toLowerCase()
+            .replace(/[^a-zA-Z0-9ก-ฮ\u0E31-\u0E4C\s]+/g, '')
+            .replace(/\s+/g, '-'),
+        );
 
       const title =
         document.querySelector('div.seriestucon > div.seriestuheader > h1')

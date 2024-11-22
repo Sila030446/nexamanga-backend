@@ -74,8 +74,9 @@ export class MangaController {
     nextSlug: string | null;
     allChapters: { slug: string; title: string }[]; // Adjust this type based on your data structure
   }> {
+    const decodeSlug = encodeURIComponent(slug)
     const { currentChapter, previousSlug, nextSlug, allChapters } =
-      await this.mangaService.getChapterPages(slug);
+      await this.mangaService.getChapterPages(decodeSlug);
 
     // Handle the case where the current chapter is not found
     if (!currentChapter) {
