@@ -141,7 +141,7 @@ export const scrapeChapterImages = async (
     try {
       await page.goto(chapterUrl, {
         waitUntil: 'networkidle2',
-        timeout: 60000,
+        timeout: 0,
       });
 
       // Scroll to the bottom to ensure lazy-loaded images are triggered
