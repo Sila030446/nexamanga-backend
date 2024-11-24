@@ -18,7 +18,7 @@ ENV CHROME_BIN=/usr/bin/chromium-browser
 WORKDIR /app
 
 # Copy package files and install dependencies
-COPY package.json package-lock.json ./
+COPY package.json  ./
 RUN npm install
 
 # Copy the rest of the application code
@@ -56,8 +56,8 @@ ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 WORKDIR /app
 
 # Copy package files and install only production dependencies
-COPY package.json package-lock.json ./
-RUN npm install --omit=dev
+COPY package*.json ./
+RUN npm install --only=production
 
 # Copy built application, Prisma client, and templates from builder
 COPY --from=builder /app/dist ./dist

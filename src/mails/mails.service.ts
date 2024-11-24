@@ -19,7 +19,13 @@ export class MailsService {
         to: mailData.to,
         subject: 'Email Confirmation',
         text: `${frontendUrl}/confirm-email/${mailData.data.hash}`,
-        templatePath: path.join('src', 'mails', 'templates', 'confirm.hbs'),
+        templatePath: path.join(
+          process.env.NODE_ENV === 'production' ? 'dist' : '',
+          'src',
+          'mails',
+          'templates',
+          'confirm.hbs',
+        ),
         context: {
           username: mailData.data.user,
           confirmationLink: `${frontendUrl}/confirm-email/${mailData.data.hash}`,
@@ -45,6 +51,7 @@ export class MailsService {
         subject: 'Password Reset',
         text: `${frontendUrl}/reset-password/${mailData.data.hash}`,
         templatePath: path.join(
+          process.env.NODE_ENV === 'production' ? 'dist' : '',
           'src',
           'mails',
           'templates',
