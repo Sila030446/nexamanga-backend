@@ -53,7 +53,7 @@ export class SearchMangaService {
           fields: [
             'title^2',
             'alternativeTitle^1',
-            'description',
+            'description^0.5',
             'genres',
             'authors',
           ],

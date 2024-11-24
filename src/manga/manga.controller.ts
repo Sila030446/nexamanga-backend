@@ -5,6 +5,7 @@ import {
   NotFoundException,
   ParseIntPipe,
   Query,
+  Post,
 } from '@nestjs/common';
 import { MangaService } from './manga.service';
 import { MangaManhwa, Chapter } from '@prisma/client';
@@ -20,6 +21,11 @@ export class MangaController {
   @Get('search')
   async search(@Query('q') query: string) {
     return this.searchQuery.searchManga(query);
+  }
+
+  @Post('index/all')
+  async indexAllMangaManhwa() {
+    await this.searchQuery.indexAllMangaManhwa();
   }
 
   @Get('popular')
