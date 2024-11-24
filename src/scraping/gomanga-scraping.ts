@@ -6,6 +6,7 @@ interface MangaDetails {
   alternativeTitle?: string;
   coverImageUrl: string;
   description: string;
+  rating: number;
   authors: { name: string; slug: string }[];
   artist: { name: string; slug: string }[];
   serialization?: string;
@@ -58,6 +59,12 @@ export const startGoMangaScraping = async (
         document.querySelector(
           'div.seriestucontent > div.seriestucontentr > div.seriestucont > div > table > tbody > tr:nth-child(6) > td:nth-child(2)',
         )?.textContent || 'Unknown serialization';
+
+      const rating = parseFloat(
+        document.querySelector(
+          'div.seriestucon > div.seriestucontent > div.seriestucontl > div.rating.bixbox > div > div.num',
+        )?.textContent || '0',
+      );
 
       const getText = (selector: string) =>
         Array.from(document.querySelectorAll(selector)).map((el) => {
@@ -114,6 +121,7 @@ export const startGoMangaScraping = async (
         authors,
         artist,
         serialization,
+        rating,
         type,
         status,
         genres,

@@ -42,7 +42,7 @@ model User {
   comments                Comment[]
   ratings                 Rating[]
   readingHistory          ReadingHistory[]
-  forgotPasswordToken     String?         @unique
+  forgotPasswordToken     String?          @unique
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -80,7 +80,7 @@ model Rating {
   userId        String
   mangaManhwa   MangaManhwa @relation(fields: [mangaManhwaId], references: [id])
   mangaManhwaId Int
-  score         Int
+  score         Float
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
 }

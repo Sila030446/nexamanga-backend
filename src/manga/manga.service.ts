@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import {
   Chapter,
   MangaManhwa,
@@ -164,6 +168,10 @@ export class MangaService {
    */
   async getManga(id: number): Promise<MangaWithFullDetails | null> {
     try {
+      if (!id)
+        throw new BadRequestException({
+          message: 'Manga ID is required',
+        });
       const manga = await this.databaseService.mangaManhwa.findUnique({
         where: { id },
         include: {
