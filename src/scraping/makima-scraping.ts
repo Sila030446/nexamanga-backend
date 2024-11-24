@@ -6,6 +6,7 @@ interface MangaDetails {
   alternativeTitle?: string;
   coverImageUrl: string;
   description: string;
+  rating: number;
   authors: { name: string; slug: string }[];
   artist: { name: string; slug: string }[];
   serialization?: string;
@@ -73,6 +74,12 @@ export const startMakimaScraping = async (
           return { name, slug };
         });
 
+      const rating = parseFloat(
+        document.querySelector(
+          'div.main-info > div.info-left > div > div.rating.bixbox > div > div.num',
+        )?.textContent || '0',
+      );
+
       const authors = getText(
         'div.main-info > div.info-left > div > div.tsinfo.bixbox > div:nth-child(4) > i',
       );
@@ -108,6 +115,7 @@ export const startMakimaScraping = async (
         alternativeTitle,
         coverImageUrl,
         description,
+        rating,
         authors,
         artist,
         serialization,
