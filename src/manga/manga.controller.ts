@@ -8,10 +8,28 @@ import {
 } from '@nestjs/common';
 import { MangaService } from './manga.service';
 import { MangaManhwa, Chapter } from '@prisma/client';
+import { SearchService } from './search/search.service';
+import { SyncElasticsearch } from './search/sync-elasticsearch';
 
 @Controller('manga')
 export class MangaController {
-  constructor(private readonly mangaService: MangaService) {}
+  constructor(
+    private readonly mangaService: MangaService,
+    private readonly searchService: SearchService,
+    private readonly syncElasticsearch: SyncElasticsearch,
+  ) {}
+
+  @Get('search')
+  async search(@Query('q') query: string) {
+    await this.syncElasticsearch.sync();
+    return this.searchService.search(query);
+  }
+
+  @Get('suggest')
+  async suggest(@Query('q') query: string) {
+    await this.syncElasticsearch.sync();
+    return this.searchService.suggest(query);
+  }
 
   @Get('popular')
   async getPopularMangas(): Promise<MangaManhwa[]> {
@@ -35,8 +53,8 @@ export class MangaController {
 
   @Get('genre/:genre')
   async getAllManhwasByGenre(
-    @Query('page', ParseIntPipe) page: number = 1, // Default value of 1 if not provided
-    @Query('limit', ParseIntPipe) limit: number = 12, // Default value of 12 if not provided
+    @Query('page', ParseIntPipe) page: number = 1,
+    @Query('limit', ParseIntPipe) limit: number = 12,
     @Param('genre') genre: string,
   ): Promise<{ mangas: MangaManhwa[]; totalPages: number }> {
     return this.mangaService.getNewMangasUpdateByGenre(genre, { page, limit });
@@ -62,9 +80,10 @@ export class MangaController {
   }
 
   @Get(':id')
-  async getManga(@Param('id') id: string): Promise<MangaManhwa | null> {
-    const mangaId = parseInt(id, 10); // Convert string id to number
-    return this.mangaService.getManga(mangaId);
+  async getManga(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<MangaManhwa | null> {
+    return this.mangaService.getManga(id);
   }
 
   @Get('pages/:slug')
@@ -74,7 +93,7 @@ export class MangaController {
     nextSlug: string | null;
     allChapters: { slug: string; title: string }[]; // Adjust this type based on your data structure
   }> {
-    const decodeSlug = encodeURIComponent(slug)
+    const decodeSlug = encodeURIComponent(slug);
     const { currentChapter, previousSlug, nextSlug, allChapters } =
       await this.mangaService.getChapterPages(decodeSlug);
 

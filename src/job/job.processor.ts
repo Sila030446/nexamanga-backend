@@ -11,6 +11,7 @@ import { Injectable } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 import { startGoMangaScraping } from 'src/scraping/gomanga-scraping';
 import { startReaperTransScraping } from 'src/scraping/reapertrans-scraping';
+import { Roles } from '@prisma/client';
 
 @Injectable()
 @Processor('jobsQueue', { concurrency: 5 })
@@ -29,14 +30,12 @@ export class JobProcessor extends WorkerHost {
   async handleScheduledJob() {
     console.log('Checking for updates...');
 
-    // Fetch all jobs with status PENDING or COMPLETED
     const jobs = await this.databaseService.job.findMany({
       where: {
         status: 'complete',
       },
     });
 
-    // Loop through each job and process it
     for (const job of jobs) {
       await this.databaseService.job.update({
         where: { id: job.id },
@@ -118,7 +117,7 @@ export class JobProcessor extends WorkerHost {
           (chapter) => chapter.slug,
         );
         const newChapters = manga.chapters.filter(
-          (chapter) =>
+          (chapter: { slug: string }) =>
             !existingChapterSlugs.includes(`${manga.titleSlug}${chapter.slug}`),
         );
 
@@ -184,6 +183,12 @@ export class JobProcessor extends WorkerHost {
       );
       const reversedChapters = manga.chapters.reverse();
 
+      const defaultUser = await this.databaseService.user.findFirst({
+        where: {
+          role: Roles.ADMIN,
+        },
+      });
+
       const savedManga = await this.databaseService.mangaManhwa.create({
         data: {
           title: manga.title,
@@ -221,6 +226,14 @@ export class JobProcessor extends WorkerHost {
           },
         },
         include: { chapters: true },
+      });
+
+      await this.databaseService.rating.create({
+        data: {
+          score: manga.rating,
+          mangaManhwa: { connect: { id: savedManga.id } },
+          user: { connect: { id: defaultUser.id } },
+        },
       });
 
       console.log('Manga saved:', savedManga);
