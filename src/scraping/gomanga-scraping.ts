@@ -1,6 +1,6 @@
 import { Page } from 'puppeteer';
 
-interface MangaDetails {
+export interface MangaDetails {
   title: string;
   titleSlug: string;
   alternativeTitle?: string;

@@ -8,10 +8,28 @@ import {
 } from '@nestjs/common';
 import { MangaService } from './manga.service';
 import { MangaManhwa, Chapter } from '@prisma/client';
+import { SearchService } from './search/search.service';
+import { SyncElasticsearch } from './search/sync-elasticsearch';
 
 @Controller('manga')
 export class MangaController {
-  constructor(private readonly mangaService: MangaService) {}
+  constructor(
+    private readonly mangaService: MangaService,
+    private readonly searchService: SearchService,
+    private readonly syncElasticsearch: SyncElasticsearch,
+  ) {}
+
+  @Get('search')
+  async search(@Query('q') query: string) {
+    await this.syncElasticsearch.sync();
+    return this.searchService.search(query);
+  }
+
+  @Get('suggest')
+  async suggest(@Query('q') query: string) {
+    await this.syncElasticsearch.sync();
+    return this.searchService.suggest(query);
+  }
 
   @Get('popular')
   async getPopularMangas(): Promise<MangaManhwa[]> {
