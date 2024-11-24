@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
 import { ElasticsearchService } from '@nestjs/elasticsearch';
+import { MangaService } from '../manga.service';
 
 @Injectable()
 export class SearchMangaService {
@@ -8,12 +9,13 @@ export class SearchMangaService {
   constructor(
     private readonly prisma: DatabaseService,
     private readonly esService: ElasticsearchService,
+    private readonly mangaService: MangaService,
   ) {}
 
   async indexAllMangaManhwa() {
     this.logger.log('Indexing all MangaManhwa data...');
     const mangaList = await this.prisma.mangaManhwa.findMany({
-      include: { genres: true, authors: true, type: true },
+      include: { genres: true, authors: true, type: true, ratings: true },
     });
 
     for (const manga of mangaList) {
@@ -21,10 +23,15 @@ export class SearchMangaService {
         index: 'manga-manhwa',
         id: manga.id.toString(),
         document: {
+          id: manga.id,
           title: manga.title,
           alternativeTitle: manga.alternativeTitle,
+          coverImageUrl: manga.coverImageUrl,
           slug: manga.slug,
           description: manga.description,
+          ratings: this.mangaService.normalizeRating(
+            this.mangaService.calculateAverageRating(manga.ratings),
+          ),
           genres: manga.genres.map((g) => g.name),
           authors: manga.authors.map((a) => a.name),
           types: manga.type.map((t) => t.name),
@@ -54,6 +61,11 @@ export class SearchMangaService {
       },
     });
 
-    return hits.hits.map((hit) => hit._source);
+    return {
+      results: hits.hits.map((hit) => ({
+        source: hit._source,
+        score: hit._score,
+      })),
+    };
   }
 }

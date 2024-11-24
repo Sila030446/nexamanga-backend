@@ -347,14 +347,14 @@ export class MangaService {
     });
   }
 
-  private calculateAverageRating(ratings: Rating[]): number {
+  calculateAverageRating(ratings: Rating[]): number {
     if (!ratings.length) return 0;
     return (
       ratings.reduce((sum, rating) => sum + rating.score, 0) / ratings.length
     );
   }
 
-  private normalizeRating(rating: number): number {
+  normalizeRating(rating: number): number {
     return Math.min(Math.max(rating, 0), 10);
   }
 

@@ -3,6 +3,7 @@ import { ElasticsearchModule } from '@nestjs/elasticsearch';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { SearchMangaService } from './search-manga.service';
 import { IndexingService } from './indexing.service';
+import { MangaService } from '../manga.service';
 
 @Module({
   imports: [
@@ -15,7 +16,7 @@ import { IndexingService } from './indexing.service';
       }),
     }),
   ],
-  providers: [SearchMangaService, IndexingService],
+  providers: [SearchMangaService, IndexingService, MangaService],
   exports: [SearchMangaService],
 })
 export class SearchMangaModule {}

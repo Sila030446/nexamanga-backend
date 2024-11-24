@@ -8,5 +8,6 @@ import { SearchMangaModule } from './search-manga/search-manga.module';
   imports: [DatabaseModule, SearchMangaModule],
   controllers: [MangaController],
   providers: [MangaService],
+  exports: [MangaService],
 })
 export class MangaModule {}
