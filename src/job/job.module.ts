@@ -3,7 +3,7 @@ import { BullModule } from '@nestjs/bullmq';
 import { JobService } from './job.service';
 import { JobController } from './job.controller';
 import { JobProcessor } from './job.processor';
-import { BlobModule } from 'src/azure/blob.module';
+import { S3Module } from 'src/s3/s3.module';
 import { UserModule } from 'src/user/user.module';
 import { TelegramModule } from 'src/telegram/telegram.module';
 
@@ -11,7 +11,7 @@ import { TelegramModule } from 'src/telegram/telegram.module';
   imports: [
     TelegramModule,
     UserModule,
-    BlobModule,
+    S3Module,
     BullModule.registerQueue({
       name: 'jobsQueue',
     }),

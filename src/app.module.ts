@@ -13,7 +13,7 @@ import { BookmarkModule } from './bookmark/bookmark.module';
 import { MangaModule } from './manga/manga.module';
 import { MailerModule } from './mailer/mailer.module';
 import { MailsModule } from './mails/mails.module';
-import { BlobModule } from './azure/blob.module';
+import { S3Module } from './s3/s3.module';
 import { TelegramModule } from './telegram/telegram.module';
 
 @Module({
@@ -22,7 +22,7 @@ import { TelegramModule } from './telegram/telegram.module';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    BlobModule,
+    S3Module,
     makimaSearchModule,
     JobModule,
     DatabaseModule,
