@@ -5,7 +5,7 @@ import {
   NotFoundException,
   ParseIntPipe,
   Query,
-  // Post,
+  Post,
 } from '@nestjs/common';
 import { MangaService } from './manga.service';
 import { MangaManhwa, Chapter } from '@prisma/client';
