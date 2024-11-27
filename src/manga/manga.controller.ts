@@ -5,7 +5,7 @@ import {
   NotFoundException,
   ParseIntPipe,
   Query,
-  Post,
+  // Post,
 } from '@nestjs/common';
 import { MangaService } from './manga.service';
 import { MangaManhwa, Chapter } from '@prisma/client';
@@ -18,15 +18,15 @@ export class MangaController {
     private readonly searchQuery: SearchMangaService,
   ) {}
 
-  @Get('search')
-  async search(@Query('q') query: string) {
-    return this.searchQuery.searchManga(query);
-  }
+  // @Get('search')
+  // async search(@Query('q') query: string) {
+  //   return this.searchQuery.searchManga(query);
+  // }
 
-  @Post('index/all')
-  async indexAllMangaManhwa() {
-    await this.searchQuery.indexAllMangaManhwa();
-  }
+  // @Post('index/all')
+  // async indexAllMangaManhwa() {
+  //   await this.searchQuery.indexAllMangaManhwa();
+  // }
 
   @Get('popular')
   async getPopularMangas(): Promise<MangaManhwa[]> {
